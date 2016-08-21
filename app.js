@@ -1,12 +1,13 @@
-var express = require('express'),
-	mongoose = require('mongoose'),
-	app = express(),
-	mongoUrl =  'mongodb://gogo:66@ds029665.mlab.com:29665/libraryapp'
+var express = require('express');
+var	mongoose = require('mongoose');
+var	mongoUrl =  'mongodb://gogo:66@ds029665.mlab.com:29665/libraryapp';
+
+var	app = express();
 
 var port = process.env.PORT || 3000;
-var bookRouter = express.Router();
 
-app.use('/api', bookRouter);
+var Book = require('./models/bookModel');
+// var bookRouter = express.Router();
 
 mongoose.connect(mongoUrl, function(err) {
     if (err) {
@@ -15,11 +16,14 @@ mongoose.connect(mongoUrl, function(err) {
         console.log('Connected to the database');
     }
 });
+var bookModel = Book;
+var bookRouter = require('./routes/bookRouter')(app, bookModel);
+app.use('/api', bookRouter);
 
 app.get('/', function(req, res) {
     res.send('hello world');
 });
 
 var server = app.listen(port, function () {
-    console.log('Gulp running on port %s', port);
+    console.log('Server running on port %s', port);
 });

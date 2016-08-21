@@ -13,6 +13,6 @@ gulp.task('default', function (){
 
 	})
 	.on('restart', function (){
-		console.log('Restarting server');
+		console.log('Gulp restarted server');
 	});
 });

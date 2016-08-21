@@ -1,14 +1,15 @@
-var mongoose = require('mongoose'),
-	Schema = mongoose.Schema();
+var	mongoose = require('mongoose'),
+	Schema = mongoose.Schema;
+
 var bookModel = new Schema({
     title: {
-        type: string
+        type: String
     },
     author : {
-        type: string
+        type: String
     },
-    genre: {type: string},
-    read: { type: Boolean, default: false}
+    genre: {type: String},
+    read: {type: Boolean, default: false}
 });
 
 module.exports = mongoose.model('Book', bookModel);
