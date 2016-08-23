@@ -2,33 +2,12 @@ var express = require('express');
 
 var routes = function (bookModel) {
     var bookRouter = express.Router();
-
     var Book = bookModel;
+    var bookController = require('../controllers/bookControllers')(Book);
 
     bookRouter.route('/')
-     .post(function (req, res) {
-        var book = new Book(req.body);
-        console.log(req.body);
-        book.save();
-        res.status(201).send(book);
-    })
-     .get(function (req, res) {
-        var query = {};
-        if (req.query.genre) {
-            query.genre = req.query.genre
-        }
-        console.log(query);
-        Book.find(query, function (err, books) {
-            if (err) {
-                res.status(500).send(err);
-                console.log(err);
-            } else {
-                console.log('pulled data form books collection db');
-                res.json(books)
-            }
-        });
-
-    });
+     .post(bookController.post)
+     .get(bookController.get)
 
     bookRouter.use('/:bookId', function (req, res, next) {
         Book.findById(req.params.bookId, function (err, book) {
@@ -46,7 +25,11 @@ var routes = function (bookModel) {
     });
     bookRouter.route('/:bookId')
         .get(function (req, res) {
-            res.json(req.book);
+            var book_as_json = req.book.toJSON();
+            book_as_json.links = {};
+            book_as_json.links.filtredByThisGenre = 'http://' + req.headers.host + '/api/books?genre=' + book_as_json.genre;
+
+            res.json(book_as_json);
 
         })
         .put(function (req, res) {
@@ -81,7 +64,16 @@ var routes = function (bookModel) {
                     console.log(req.book);
                     console.log("i am the next function");
             });
-        });
+        })
+        .delete(function (req, res){
+           req.book.remove(function (err){
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                res.status(204).json("Removed");
+            }
+           }); 
+        })
 
     return bookRouter;
 
